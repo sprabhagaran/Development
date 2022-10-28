@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StringType, IntegerType
 from pyspark.sql.functions import col, from_json
 
 spark = SparkSession.builder.appName("kafka-spark").getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
 df = spark.readStream\
 	.format("kafka")\
@@ -19,5 +20,6 @@ df2 = df1.select(from_json(col("value"),json_schema))
 df2.writeStream\
 	.format("console")\
 	.outputMode("append")\
+	.option("truncate","false")\
 	.start()\
 	.awaitTermination()
